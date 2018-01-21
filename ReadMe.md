@@ -1,5 +1,6 @@
 # Solarflare Device Plugin
 ---------------------------
+https://asciinema.org/a/UyzMDcSHB42eWrP0soiwPyhEM
 
 ### Steps to deploy
     $ git clone this repo
