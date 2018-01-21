@@ -53,3 +53,5 @@
             limits:
                 solarflare/smartNIC: '1'
 
+### More Details:
+    https://docs.google.com/document/d/18lX8aqoQhB8vBlupo0nfxgh-49EeMU8bTlHioFjEg-c/edit#heading=h.6ef835v63927

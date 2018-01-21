@@ -3,6 +3,7 @@
 NIC=${1}
 K8S_API=${2}
 
+sleep 0.1
 eval POD_UID=`cat /var/lib/kubelet/device-plugins/kubelet_internal_checkpoint |  jq --arg NIC "$NIC" '.Entries[] | select(.DeviceIDs[] | contains($NIC)) | .PodUID'`
 
 eval POD_NAME=$(curl $K8S_API/api/v1/pods/ | jq -r --arg POD_UID $POD_UID '.items[].metadata | select(.uid == $POD_UID) | .name')
