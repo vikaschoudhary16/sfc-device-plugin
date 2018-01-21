@@ -1,0 +1,96 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+data:
+  onload-version: 201606-u1.3
+  reg-exp-sfc: (?m)[\r\n]+^.*SFC[6-9].*$
+  socket-name: sfcNIC
+  resource-name: solarflare/smartNIC
+  k8s-api: http://127.0.0.1:8080
+  node-label-onload-version: device.sfc.onload-version
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: sfc-device-plugin
+  namespace: kube-system
+  labels:
+    tier: node
+spec:
+  template:
+    metadata:
+      labels:
+        tier: node
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        beta.kubernetes.io/arch: amd64
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: device-plugin-ctr
+        image: sfc-dev-plugin:latest
+        imagePullPolicy: Never
+        command: ["./start.sh"]
+        env:
+        - name: ONLOAD_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: onload-version
+        - name: REG_EXP_SFC
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: reg-exp-sfc
+        - name: SOCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: socket-name
+        - name: RESOURCE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: resource-name
+        - name: K8S_API
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: k8s-api
+        - name: NODE_LABEL_ONLOAD_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: node-label-onload-version
+        volumeMounts:
+          - mountPath: /gopath/run
+            name: docker
+          - mountPath: /gopath/proc
+            name: proc
+          - mountPath: "/root/.ssh/id_rsa"
+            name: ssh-key
+          - mountPath: "/var/lib/kubelet"
+            name: kubelet-socket
+          - mountPath: "/etc/kubernetes/pki"
+            name: pki
+      volumes:
+        - name: docker
+          hostPath:
+            path: /var/run
+        - name: proc
+          hostPath:
+            path: /proc
+        - hostPath:
+            path: "/root/.ssh/id_rsa"
+          name: ssh-key
+        - hostPath:
+            path: "/var/lib/kubelet"
+          name: kubelet-socket
+        - hostPath:
+            path: "/etc/kubernetes/pki"
+          name: pki

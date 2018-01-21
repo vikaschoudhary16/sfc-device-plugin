@@ -1,0 +1,6 @@
+export ONLOAD_VERSION="201606-u1.3"
+export REG_EXP_SFC="(?m)[\r\n]+^.*SFC[6-9].*$"
+export SOCKET_NAME="sfcNIC"
+export RESOURCE_NAME="solarflare/smartNIC"
+export K8S_API="https://localhost:6443"
+export NODE_LABEL_ONLOAD_VERSION="device.sfc.onload-version"
